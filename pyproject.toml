@@ -1,0 +1,15 @@
+[project]
+name = "experimental-design-multichannel"
+version = "1.0.0"
+dependencies = [
+    "numpy",
+    "dipy==1.5.0",
+    "nibabel==5.1.0",
+    "dmipy@git+https://github.com/AthenaEPI/dmipy@2f109e83c8202210b1bf9d9e24b735422f2aecb0",
+    "tadred@git+https://github.com/sbb-gh/tadred@main",
+]
+
+[build-system]
+requires = ["setuptools", "setuptools_scm[toml]>=6.2", "wheel"]
+
+[tool.setuptools.packages.find]
