@@ -54,7 +54,7 @@ n_test = n_train // 10  # No. test set voxels
 # %% (3)
 # Create data, we provide three options, descriptions below
 
-option = 2  # choose {1,2,3}
+option = 1  # choose {1,2,3}
 
 match option:
     case 1:

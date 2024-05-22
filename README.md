@@ -25,16 +25,16 @@ First create an environment and enter it, we use Python v3.10.4.  We provide two
 
 ```bash
 # Pyenv documentation is [link](https://github.com/pyenv), where <INSTALL_DIR> is the directory the virtual environment is installed in.
-python3.10 -m venv <INSTALL_DIR>/experimental-design-imaging # Use compatible Python version e.g. 3.10.4
-. <INSTALL_DIR>/experimental-design-imaging/bin/activate
+python3.10 -m venv <INSTALL_DIR>/experimental-design-multichannel-env # Use compatible Python version e.g. 3.10.4
+. <INSTALL_DIR>/experimental-design-multichannel-env/bin/activate
 ```
 
 ## Conda
 
 ```bash
 # Conda documentation is [link](https://docs.conda.io/en/latest/), where <INSTALL_DIR> is the directory the virtual environment is installed in.
-conda create -n experimental-design-imaging python=3.10.4
-conda activate experimental-design-imaging
+conda create -n experimental-design-multichannel-env python=3.10.4
+conda activate experimental-design-multichannel-env
 ```
 
 ## Installation Part 2: TADRED and other Packages
@@ -57,9 +57,9 @@ pip install git+https://github.com/sbb-gh/experimental-design-multichannel.git@m
 ### Using pip
 
 ```bash
+pip install numpy==1.23.4 git+https://github.com/AthenaEPI/dmipy.git@1.0.1 # use compatible numpy
 pip install dipy==1.5.0
 pip install nibabel==5.1.0
-pip install git+https://github.com/AthenaEPI/dmipy.git@1.0.1
 pip install git+https://github.com/sbb-gh/tadred.git@main # can also install tadred from source: www.github.com/sbb-gh/tadred
 ```
 
