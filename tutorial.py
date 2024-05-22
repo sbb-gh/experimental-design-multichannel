@@ -26,16 +26,16 @@ and TADRED hyperparameters - check base_cfg.yaml.`
 
 Overview for cells:
     - Choose data size splits 2
-    - Generate data examples 3-A/B/C
+    - Generate data examples 3
     - Data format for TADRED 4
-    - Option to pass data directly, or save to disk and load 5-A/B
+    - Option to pass data directly, or save to disk and load 5
     - Option to save output 6
-    - TADRED hyperparameters 7,8,9 in order of importance.
+    - TADRED hyperparameters 7,8,9
 """
 
 
-########## (1)
-# Import modules, see requirements.txt for tadred requirements, set global seed
+# %% (1)
+# Import modules, README.md for tadred requirements, set global seed
 
 import numpy as np
 from tadred import tadred_main, utils
@@ -43,7 +43,7 @@ from tadred import tadred_main, utils
 np.random.seed(0)  # Random seed for entire script
 
 
-########## (2)
+# %% (2)
 # Data split sizes
 
 n_train = 10**3  # No. training voxels, reduce for faster training speed
@@ -51,50 +51,51 @@ n_val = n_train // 10  # No. validations set voxels
 n_test = n_train // 10  # No. test set voxels
 
 
-########## (3-A)
-# Create dummy, randomly generated (positive) data
+# %% (3)
+# Create data, we provide three options, descriptions below
 
-Cbar = 220  # Num features of densely-sampled data
-M = 12  # Number of target regressors
-rand = np.random.lognormal  # Random genenerates positive
-train_inp, train_tar = rand(size=(n_train, Cbar)), rand(size=(n_train, M))
-val_inp, val_tar = rand(size=(n_val, Cbar)), rand(size=(n_val, M))
-test_inp, test_tar = rand(size=(n_test, Cbar)), rand(size=(n_test, M))
+option = 2  # choose {1,2,3}
 
-"""
-########## (3-B)
-# Generate data using VERDICT model and scheme [link](https://pubmed.ncbi.nlm.nih.gov/25426656/)
-# Requires python package dmipy [link](https://github.com/AthenaEPI/dmipy) tested on v1.0.5
+match option:
+    case 1:
+        # Create dummy, randomly generated (positive) data
 
-import simulations
+        Cbar = 220  # Num features of densely-sampled data
+        M = 12  # Number of target regressors
+        rand = np.random.lognormal  # Random genenerates positive
+        train_inp, train_tar = rand(size=(n_train, Cbar)), rand(size=(n_train, M))
+        val_inp, val_tar = rand(size=(n_val, Cbar)), rand(size=(n_val, M))
+        test_inp, test_tar = rand(size=(n_test, Cbar)), rand(size=(n_test, M))
 
-# Create train, val, test sets for our example from a scheme
-train_inp, train_tar = simulations.create_verdict_data(n_train)
-val_inp, val_tar = simulations.create_verdict_data(n_val)
-test_inp, test_tar = simulations.create_verdict_data(n_test)
-Cbar = train_inp.shape[1]
-M = train_tar.shape[1]  # Cbar,M same for val, test data
-"""
+    case 2:
+        # Use VERDICT model and scheme [link](https://pubmed.ncbi.nlm.nih.gov/25426656/)
+        # Requires dmipy [link](https://github.com/AthenaEPI/dmipy) tested on v1.0.5
 
-"""
-########## (3-C)
-# Generate data using NODDI model [link](https://pubmed.ncbi.nlm.nih.gov/22484410/)
-# Uses acquisition scheme [link](https://pubmed.ncbi.nlm.nih.gov/28643354/)
-# Requires python package dmipy [link](https://github.com/AthenaEPI/dmipy) tested on v1.0.5
+        import simulations
 
-import simulations
+        train_inp, train_tar = simulations.create_verdict_data(n_train)
+        val_inp, val_tar = simulations.create_verdict_data(n_val)
+        test_inp, test_tar = simulations.create_verdict_data(n_test)
+        Cbar = train_inp.shape[1]
+        M = train_tar.shape[1]  # Cbar,M same for val, test data
 
-# Create train, val, test sets for our example from a scheme
-train_inp, train_tar = simulations.create_noddi_data(n_train)
-val_inp, val_tar = simulations.create_noddi_data(n_val)
-test_inp, test_tar = simulations.create_noddi_data(n_test)
-Cbar = train_inp.shape[1]
-M = train_tar.shape[1]  # Cbar,M same for val, test data
-"""
-########## (4)
-# Load data into TADRED format
+    case 3:
+        # Use NODDI model [link](https://pubmed.ncbi.nlm.nih.gov/22484410/)
+        # Uses acquisition scheme [link](https://pubmed.ncbi.nlm.nih.gov/28643354/)
+        # Requires dmipy [link](https://github.com/AthenaEPI/dmipy) tested on v1.0.5
 
-# Data in TADRED format, \bar{C} measurements, M target regresors
+        import simulations
+
+        train_inp, train_tar = simulations.create_noddi_data(n_train)
+        val_inp, val_tar = simulations.create_noddi_data(n_val)
+        test_inp, test_tar = simulations.create_noddi_data(n_test)
+        Cbar = train_inp.shape[1]
+        M = train_tar.shape[1]  # Cbar,M same for val, test data
+
+
+# %% (4)
+# Move data into TADRED format, \bar{C} measurements, M target regresors
+
 data = dict(
     train=train_inp,  # Shape n_train x \bar{C}
     train_tar=train_tar,  # Shape n_train x M
@@ -107,35 +108,35 @@ data = dict(
 args = utils.load_base_args()
 
 
-"""
-########## (5-A)
-# Option to save data to disk, and TADRED load
+# %% (5)
+# Passing data to TADRED, either directly or save to disk and load
 
-data_fil: str = ""  # Add path to saved file
-np.save(data_fil, data)
-print("Saving data as", data_fil)
-pass_data = None
-args.data_norm.data_fil = data_fil
-"""
+save_to_disk_and_load = False  # set to True to save and then load data
+
+match save_to_disk_and_load:
+    case False:
+        pass_data = data
+
+    case True:
+        # Option to save data to disk, and TADRED load
+
+        data_fil: str = ""  # Add path to saved file
+        np.save(data_fil, data)
+        print("Saving data as", data_fil)
+        pass_data = None
+        args.data_norm.data_fil = data_fil
 
 
-########## (5-B)
-# Option to pass data to TADRED directly
-
-pass_data = data
-
-
-########## (6)
-# Option to save the output
-"""
+# %% (6)
+# Uncomment and fill below to save output
 # Output saved as dict in save_fil=<out_base>/<proj_name>/results/<run_name>_all.pkl
 # Load with pickle
-args.output.out_base = <ADD>
-args.output.proj_name = <ADD>
-args.output.run_name = <ADD>
-"""
+# args.output.out_base = <ADD>
+# args.output.proj_name = <ADD>
+# args.output.run_name = <ADD>
 
-########## (7)
+
+# %% (7)
 # Simplest version of TADRED, modifying the most important hyperparameters
 
 
@@ -154,8 +155,8 @@ args.network.num_units_task = [1000, 1000]
 tadred_main.run(args, pass_data)
 
 
-########## (8)
-# Modify more TADRED hyperparameters, less impASDASortant, may change results
+# %% (8)
+# Modify less important TADRED hyperparameters, may change results
 
 # Fix score after epoch, E_1 in paper
 args.tadred_train_eval.epochs_decay = 25
@@ -169,8 +170,8 @@ args.tadred_train_eval.epochs_decay = 10
 tadred_main.run(args, pass_data)
 
 
-########## (9)
-# Deep learning training hyperparameters for inner loop
+# %% (9)
+# Deep learning training hyperparameters for TADRED inner loop
 
 # Training epochs per step, set large to use early stopping
 args.tadred_train_eval.epochs = 10000
@@ -183,5 +184,5 @@ args.train_pytorch.dataloader_params.batch_size = 1500
 
 tadred_main.run(args, pass_data)
 
-# TODO think of logging on main script
+
 print("EOF", __file__)
